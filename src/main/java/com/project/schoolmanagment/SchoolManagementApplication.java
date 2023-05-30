@@ -9,6 +9,10 @@ public class SchoolManagementApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(SchoolManagementApplication.class, args);
+
+
+
+        //first line of my code
     }
 
 }
