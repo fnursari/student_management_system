@@ -70,7 +70,7 @@ public class ContactMessageService {
             pageable = PageRequest.of(page,size,Sort.by(sort).descending());
         }
 
-        return contactMessageRepository.findBy(email,pageable);
+        return contactMessageRepository.findByEmailEquals(email,pageable).map(this::createResponse);
     }
 
     private ContactMessageResponse createResponse(ContactMessage contactMessage){
