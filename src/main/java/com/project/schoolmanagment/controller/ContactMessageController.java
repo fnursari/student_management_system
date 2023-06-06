@@ -32,8 +32,19 @@ public class ContactMessageController {
             @RequestParam(value = "sort", defaultValue = "date") String sort,
             @RequestParam(value = "type", defaultValue = "desc") String type){
 
-        contactMessageService.getAll(page,size,sort,type);
-        return null;
+        return contactMessageService.getAll(page,size,sort,type);
+    }
+
+    @GetMapping("/searchByEmail")
+    public Page<ContactMessageResponse> searchByEmail(
+            @RequestParam(value = "email") String email,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort", defaultValue = "date") String sort,
+            @RequestParam(value = "type", defaultValue = "desc") String type) {
+
+        return contactMessageService.
+
     }
 
 }
