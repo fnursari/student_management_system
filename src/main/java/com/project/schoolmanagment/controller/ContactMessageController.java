@@ -44,7 +44,25 @@ public class ContactMessageController {
             @RequestParam(value = "type", defaultValue = "desc") String type) {
 
         return contactMessageService.searchByEmail(email,page,size,sort,type);
-
     }
+
+    @GetMapping("/searchBySubject")
+    public Page<ContactMessageResponse> searchBySubject(
+            @RequestParam(value = "subject") String subject,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort", defaultValue = "date") String sort,
+            @RequestParam(value = "type", defaultValue = "desc") String type) {
+
+        return contactMessageService.searchBySubject(subject,page,size,sort,type);
+    }
+
+    //HOMEWORK!!!!
+    //TODO please add more endpoints for
+    // 1-> DELETE by ID,
+    // 2-> update (first find the correct contact messages according to its ID),
+    // 3-> getAllMessages as a list.
+
+
 
 }
