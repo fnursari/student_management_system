@@ -1,5 +1,6 @@
 package com.project.schoolmanagment.controller;
 
+import com.project.schoolmanagment.entity.concretes.ContactMessage;
 import com.project.schoolmanagment.payload.request.ContactMessageRequest;
 import com.project.schoolmanagment.payload.response.ContactMessageResponse;
 import com.project.schoolmanagment.payload.response.ResponseMessage;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 @RestController
@@ -53,8 +55,9 @@ public class ContactMessageController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort", defaultValue = "date") String sort,
             @RequestParam(value = "type", defaultValue = "desc") String type) {
+        return null;
 
-        return contactMessageService.searchBySubject(subject,page,size,sort,type);
+//        return contactMessageService.searchBySubject(subject,page,size,sort,type);
     }
 
     //HOMEWORK!!!!
@@ -62,6 +65,24 @@ public class ContactMessageController {
     // 1-> DELETE by ID,
     // 2-> update (first find the correct contact messages according to its ID),
     // 3-> getAllMessages as a list.
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseMessage<ContactMessageResponse> deleteById(@PathVariable Long id){
+        return contactMessageService.deleteById(id);
+    }
+
+    @PutMapping("/update/{id}")
+
+    public ResponseMessage<ContactMessageResponse> update(@PathVariable Long id,
+            @RequestBody @Valid ContactMessageRequest contactMessageRequest){
+        return contactMessageService.update(id,contactMessageRequest);
+    }
+
+    @GetMapping("/getAllList")
+    public List<ContactMessageResponse> getAllAsList(){
+        List<ContactMessageResponse> contactMessageResponses = contactMessageService.getAllAsList();
+        return contactMessageResponses;
+    }
 
 
 

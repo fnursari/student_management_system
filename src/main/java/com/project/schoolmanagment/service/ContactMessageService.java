@@ -2,6 +2,7 @@ package com.project.schoolmanagment.service;
 
 import com.project.schoolmanagment.entity.concretes.ContactMessage;
 import com.project.schoolmanagment.exception.ConflictException;
+import com.project.schoolmanagment.exception.ResourceNotFoundException;
 import com.project.schoolmanagment.payload.request.ContactMessageRequest;
 import com.project.schoolmanagment.payload.response.ContactMessageResponse;
 import com.project.schoolmanagment.payload.response.ResponseMessage;
@@ -16,7 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -93,5 +96,53 @@ public class ContactMessageService {
                 .email(contactMessageRequest.getEmail())
                 .date(LocalDate.now())
                 .build();
+    }
+
+    public ResponseMessage<ContactMessageResponse> deleteById(Long id) {
+
+        ContactMessage contactMessage = getContactMessageById(id);
+
+        contactMessageRepository.delete(contactMessage);
+
+        return ResponseMessage.<ContactMessageResponse>builder()
+                .message("Contact Message Deleted Successfully")
+                .httpStatus(HttpStatus.OK)
+                .build();
+
+    }
+
+    private ContactMessage getContactMessageById(Long id){
+        ContactMessage contactMessage = contactMessageRepository.findById(id).orElseThrow(
+                ()-> new ResourceNotFoundException("Message whose id "+ id +" not found")
+        );
+        return contactMessage;
+
+    }
+
+    public ResponseMessage<ContactMessageResponse> update(Long id,ContactMessageRequest contactMessageRequest){
+
+        ContactMessage existingContactMessage = getContactMessageById(id);
+
+        existingContactMessage = existingContactMessage.toBuilder()
+                .name(contactMessageRequest.getName())
+                .subject(contactMessageRequest.getSubject())
+                .message(contactMessageRequest.getMessage())
+                .email(contactMessageRequest.getEmail())
+                .build();
+        contactMessageRepository.save(existingContactMessage);
+
+        return ResponseMessage.<ContactMessageResponse>builder()
+                .object(createResponse(existingContactMessage))
+                .message("Contact message updated")
+                .httpStatus(HttpStatus.OK)
+                .build();
+        }
+
+
+    public List<ContactMessageResponse> getAllAsList() {
+        List<ContactMessage> contactMessages = contactMessageRepository.findAll();
+        List<ContactMessageResponse> contactMessageResponses =
+                contactMessages.stream().map(this::createResponse).collect(Collectors.toList());
+        return contactMessageResponses;
     }
 }
