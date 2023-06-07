@@ -22,11 +22,28 @@ public class ContactMessageController {
 
     private final ContactMessageService contactMessageService;
 
+    /**
+     * {
+     *     "name":"this is my name",
+     *     "email":"techpro@gmail.com",
+     *     "subject":"starting the project",
+     *     "message":"this is my message"
+     * }
+     */
+
     @PostMapping("/save")
     public ResponseMessage<ContactMessageResponse> save(@RequestBody @Valid ContactMessageRequest contactMessageRequest){
         return contactMessageService.save(contactMessageRequest);
     }
 
+    /**
+     *
+     * @param page number of selected page
+     * @param size size of the pgae
+     * @param sort sort propert
+     * @param type DESC or ASC
+     * @return ContactMessageResponse
+     */
     @GetMapping("/getAll")
     public Page<ContactMessageResponse> getAll(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -55,9 +72,9 @@ public class ContactMessageController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort", defaultValue = "date") String sort,
             @RequestParam(value = "type", defaultValue = "desc") String type) {
-        return null;
 
-//        return contactMessageService.searchBySubject(subject,page,size,sort,type);
+        return contactMessageService.searchBySubject(subject,page,size,sort,type);
+
     }
 
     //HOMEWORK!!!!
