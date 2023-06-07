@@ -109,8 +109,6 @@ public class ContactMessageService {
     }
 
 
-}
-
 
     //////////////////**********************************************************************************
 
@@ -160,7 +158,11 @@ public class ContactMessageService {
         List<ContactMessageResponse> contactMessageResponses =
                 contactMessages.stream().map(this::createResponse).collect(Collectors.toList());
         return contactMessageResponses;
+    }
 
+    //////////////////**********************************************************************************
 
-        //////////////////**********************************************************************************   }
 }
+
+
+
