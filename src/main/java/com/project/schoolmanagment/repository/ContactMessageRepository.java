@@ -33,5 +33,6 @@ public interface ContactMessageRepository extends JpaRepository<ContactMessage,L
     boolean existsByEmailAndDate(String email, LocalDate date);
 
     Page<ContactMessage> findByEmailEquals(String email, Pageable pageable);
+    Page<ContactMessage> findBySubjectEquals(String subject, Pageable pageable);
 
 }

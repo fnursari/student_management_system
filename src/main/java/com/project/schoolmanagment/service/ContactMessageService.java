@@ -76,6 +76,15 @@ public class ContactMessageService {
         return contactMessageRepository.findByEmailEquals(email,pageable).map(this::createResponse);
     }
 
+    public Page<ContactMessageResponse> searchBuSubject(String subject, int page, int size, String sort, String type){
+        Pageable pageable = PageRequest.of(page,size,Sort.by(sort).ascending());
+        if (Objects.equals(type,"desc")){
+            pageable = PageRequest.of(page,size,Sort.by(sort).descending());
+        }
+
+
+    }
+
     private ContactMessageResponse createResponse(ContactMessage contactMessage){
         return ContactMessageResponse.builder()
                 .name(contactMessage.getName())
@@ -97,6 +106,12 @@ public class ContactMessageService {
                 .date(LocalDate.now())
                 .build();
     }
+
+
+}
+
+
+    //////////////////**********************************************************************************
 
     public ResponseMessage<ContactMessageResponse> deleteById(Long id) {
 
@@ -144,5 +159,7 @@ public class ContactMessageService {
         List<ContactMessageResponse> contactMessageResponses =
                 contactMessages.stream().map(this::createResponse).collect(Collectors.toList());
         return contactMessageResponses;
-    }
+
+
+        //////////////////**********************************************************************************   }
 }
