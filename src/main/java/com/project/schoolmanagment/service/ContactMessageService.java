@@ -112,13 +112,13 @@ public class ContactMessageService {
 
     //////////////////**********************************************************************************
 
-    public ResponseMessage<ContactMessageResponse> deleteById(Long id) {
+    public ResponseMessage<Void> deleteById(Long id) {
 
         ContactMessage contactMessage = getContactMessageById(id);
 
         contactMessageRepository.delete(contactMessage);
 
-        return ResponseMessage.<ContactMessageResponse>builder()
+        return ResponseMessage.<Void>builder()
                 .message("Contact Message Deleted Successfully")
                 .httpStatus(HttpStatus.OK)
                 .build();

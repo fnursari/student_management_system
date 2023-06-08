@@ -84,7 +84,7 @@ public class ContactMessageController {
     // 3-> getAllMessages as a list.
 
     @DeleteMapping("/delete/{id}")
-    public ResponseMessage<ContactMessageResponse> deleteById(@PathVariable Long id){
+    public ResponseMessage<Void> deleteById(@PathVariable Long id){
         return contactMessageService.deleteById(id);
     }
 

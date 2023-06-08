@@ -28,5 +28,7 @@ public class Teacher extends User {
     @Column(unique = true)
     private String email;
 
+    //what is the database views
+
 
 }
