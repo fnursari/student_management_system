@@ -50,8 +50,10 @@ public class LessonProgram implements Serializable {
     @ManyToMany(mappedBy = "lessonsProgramList", fetch = FetchType.EAGER)
     private Set<Student> students;
 
+    @PreRemove
     private void removeLessonProgramFromStudent(){
-        teachers.forEach(teacher -> teacher.getP);
+        teachers.forEach(teacher -> teacher.getLessonsProgramList().remove(this));
+        students.forEach(student -> student.getLessonsProgramList().remove(this));
     }
 
 }

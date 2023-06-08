@@ -41,7 +41,7 @@ public class Student extends User {
     @ManyToMany
     @JsonIgnore
     @JoinTable(
-            name = "student_lesson_program",
+            name = "student_lessonprogram",
             joinColumns = @JoinColumn(name = "student_id"),
             inverseJoinColumns = @JoinColumn(name = "lesson_program_id")
     )
