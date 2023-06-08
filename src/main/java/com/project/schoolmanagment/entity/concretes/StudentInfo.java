@@ -40,7 +40,10 @@ public class StudentInfo {
 
     @Enumerated(EnumType.STRING)
     private Note letterGrade;
-    // ctrl+shift+alt+l --> reformatted the code
+    // CTRL + SHIFT + ALT + L --> reformatted the code
+
+    @OneToOne
+    private EducationTerm educationTerm;
 
 
 }

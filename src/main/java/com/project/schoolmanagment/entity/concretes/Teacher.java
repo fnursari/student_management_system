@@ -4,10 +4,8 @@ import com.project.schoolmanagment.entity.abstracts.User;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,6 +27,9 @@ public class Teacher extends User {
     private String email;
 
     //what is the database views
+
+    @OneToMany(mappedBy = "teacher", cascade = CascadeType.REMOVE)
+    private List<StudentInfo> studentInfos;
 
 
 }
