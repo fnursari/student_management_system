@@ -1,6 +1,7 @@
 package com.project.schoolmanagment.entity.concretes;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.schoolmanagment.entity.enums.Term;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Data
@@ -35,6 +37,17 @@ public class EducationTerm {
     @Column(name = "end_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate endDate;
+
+    @NotNull(message = "Last registration date must not be empty")
+    @Column(name = "last_registration_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate lastRegistrationDate;
+
+    //CTRL+SHIFT+V --> kopyaladıklarının hepsi görünüyor
+
+    @OneToMany(mappedBy = "educationTerm", cascade = CascadeType.ALL)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private List<LessonProgram> lessonProgram;
 
 
 }

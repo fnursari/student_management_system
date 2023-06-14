@@ -41,6 +41,7 @@ public abstract class User {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate birthDay;
 
+    //SHIFT+F6 --> refactor rename - include accessors
     private String birthPlace;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -53,6 +54,7 @@ public abstract class User {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private UserRole userRole;
 
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
 

@@ -36,6 +36,11 @@ public class LessonProgram implements Serializable {
     private LocalTime stopTime;
 
     @ManyToMany
+    @JoinTable(
+            name = "lessonprogram_lesson_table",
+            joinColumns = @JoinColumn(name = "lessonprogram_id"),
+            inverseJoinColumns = @JoinColumn(name = "lesson_id")
+    )
     private Set<Lesson> lesson;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
