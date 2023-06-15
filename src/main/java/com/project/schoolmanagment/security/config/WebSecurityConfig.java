@@ -1,5 +1,6 @@
 package com.project.schoolmanagment.security.config;
 
+
 import com.project.schoolmanagment.security.jwt.AuthEntryPointJwt;
 import com.project.schoolmanagment.security.jwt.AuthTokenFilter;
 import com.project.schoolmanagment.security.service.UserDetailsServiceImpl;
@@ -25,8 +26,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 /**
- * this class is the main configuration class of SECURITY
- * All implementation will be injected in this class and be used as configuration
+ * this class is the main configuration class of SECURITY.
+ * All implementation will be injected in this class and be used as configuration.
  */
 public class WebSecurityConfig {
 
@@ -34,16 +35,13 @@ public class WebSecurityConfig {
 
     private final AuthEntryPointJwt unauthorizedHandler;
 
-
     /**
      * this will be our authentication manager
      */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
-
     }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors().and()
@@ -52,29 +50,31 @@ public class WebSecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 //we configured session management
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                //we added white list
+                // we added white list
                 .authorizeRequests().antMatchers(AUTH_WHITE_LIST).permitAll()
-                //except white list we authenticate all request
+                // except white list we authenticate all request
                 .anyRequest().authenticated();
+
         http.headers().frameOptions().sameOrigin();
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+
     }
 
 
+
     /**
-     * this will be our token filter.
+     * ,this will be our token filer.
      */
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
 
-
     /**
-     * this will be our authenticationProvider
+     * this will be our authenticationProvider.
      */
     @Bean
     public DaoAuthenticationProvider authenticationProvider(){
@@ -84,9 +84,8 @@ public class WebSecurityConfig {
         return authenticationProvider;
     }
 
-
     /**
-     * this will be our password encoder
+     * this will be out password encoder
      */
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -95,20 +94,19 @@ public class WebSecurityConfig {
 
     /**
      * this will be our CORS configuration
-     * @return
      */
     @Bean
     public WebMvcConfigurer corsConfigurer(){
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                //we allow all URL.s
+                // we allow all URL.s
                 registry.addMapping("/**")
-                        //we all allow all origins
+                        // we allow all origins
                         .allowedOrigins("*")
-                        //we allow all headers
+                        // we allow all headers
                         .allowedHeaders("*")
-                        //we allow all HTTP methods
+                        // we allow all HTTP methods
                         .allowedMethods("*");
             }
         };
@@ -122,6 +120,10 @@ public class WebSecurityConfig {
             "/*.json",
             "/contactMessages/save",
             "/auth/login"
+
     };
+
+
+
 
 }

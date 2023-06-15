@@ -15,21 +15,4 @@ public interface ViceDeanRepository extends JpaRepository<ViceDean,Long> {
 
     ViceDean findByUsernameEquals(String username);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

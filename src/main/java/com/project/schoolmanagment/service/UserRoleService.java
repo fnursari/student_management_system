@@ -17,35 +17,39 @@ public class UserRoleService {
 
     private final UserRoleRepository userRoleRepository;
 
-    public UserRole getUserRole(RoleType roleType){
-//        Optional<UserRole> userRole = userRoleRepository.findByEnumRoleEquals(roleType);
+    public UserRole getUserRole (RoleType roleType){
 
-        /**
-         * check the optional usages in spring boot.
-         */
+        //Optional<UserRole> userRole = userRoleRepository.findByEnumRoleEquals(roleType);
 
-//        if (userRole.isPresent()){
-//            return userRole.get();
-//        }else {
-//            throw new ConflictException(Messages.ROLE_NOT_FOUND);
-//        }
+//		/**
+//		 * check the optional usages in spring boot.
+//		 */
+//		if(userRole.isPresent()){
+//			return userRole.get();
+//		} else {
+//			throw new ConflictException(Messages.ROLE_NOT_FOUND);
+//		}
 
         return userRoleRepository.findByEnumRoleEquals(roleType).orElseThrow(
                 ()-> new ConflictException(Messages.ROLE_NOT_FOUND));
 
+
     }
 
-    public List<UserRole> getAllUserRole(){
+    public List<UserRole>getAllUserRole(){
         return userRoleRepository.findAll();
     }
 
-    public UserRole save(RoleType roleType){
-        if (userRoleRepository.existsByEnumRoleEquals(roleType)){
-            throw  new ConflictException(Messages.ROLE_ALREADY_EXIST);
+    public UserRole save (RoleType roleType){
+        if(userRoleRepository.existsByEnumRoleEquals(roleType)){
+            throw new ConflictException(Messages.ROLE_ALREADY_EXIST);
         }
-
-        UserRole userRole =  UserRole.builder().roleType(roleType).build();
+        UserRole userRole = UserRole.builder().roleType(roleType).build();
         return userRoleRepository.save(userRole);
     }
+
+
+
+
 
 }

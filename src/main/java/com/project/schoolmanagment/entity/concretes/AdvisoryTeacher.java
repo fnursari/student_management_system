@@ -1,7 +1,10 @@
 package com.project.schoolmanagment.entity.concretes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -22,4 +25,7 @@ public class AdvisoryTeacher {
 
     @OneToOne
     private Teacher teacher;
+
+
+
 }

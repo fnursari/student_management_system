@@ -1,5 +1,6 @@
 package com.project.schoolmanagment.security.jwt;
 
+
 import com.project.schoolmanagment.security.service.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
@@ -12,22 +13,21 @@ import java.util.Date;
 
 @Component
 public class JwtUtils {
-
     /**
      * IMPORTANT
      * Logging feature can be / should be implemented in every method
-     * that we need to get more / detailed information.
+     * that we need to get more/detailed information.
      */
-
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtUtils.class);
 
     @Value("${backendapi.app.jwtExpirationMs}")
     private long jwtExpirationMs;
 
+
     @Value("${backendapi.app.jwtSecret}")
     private String jwtSecret;
 
-    public String generateJwtToken(Authentication authentication) {
+    public String generateJtwToken(Authentication authentication) {
         //get infos of logged-in user from context
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
@@ -39,17 +39,16 @@ public class JwtUtils {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwtToken);
             return true;
         } catch (ExpiredJwtException e) {
-            LOGGER.error("JWT token is expired : {}" + e.getMessage());
+            LOGGER.error("Jwt token is expired : {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
-            LOGGER.error("JWT token is unsupported : {}" + e.getMessage());
+            LOGGER.error("Jwt token is unsupported : {}", e.getMessage());
         } catch (MalformedJwtException e) {
-            LOGGER.error("JWT token is invalid : {}" + e.getMessage());
+            LOGGER.error("Jwt token is invalid : {}", e.getMessage());
         } catch (SignatureException e) {
-            LOGGER.error("JWT Signature is invalid : {}" + e.getMessage());
+            LOGGER.error("Jwt Signature is invalid : {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            LOGGER.error("JWT is empty : {}" + e.getMessage());
+            LOGGER.error("Jwt is empty : {}", e.getMessage());
         }
-
         return false;
     }
 
@@ -62,7 +61,7 @@ public class JwtUtils {
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
-                .signWith(SignatureAlgorithm.ES512, jwtSecret)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
@@ -73,4 +72,6 @@ public class JwtUtils {
                 .getBody()
                 .getSubject();
     }
+
+
 }

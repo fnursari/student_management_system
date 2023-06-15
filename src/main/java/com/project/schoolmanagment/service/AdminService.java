@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.util.Objects;
 import java.util.Optional;
 
@@ -24,28 +23,20 @@ public class AdminService {
 
     private final AdminRepository adminRepository;
 
-    private final DeanRepository deanRepository;
-
-    private final ViceDeanRepository viceDeanRepository;
-
-    private final StudentRepository studentRepository;
-
-    private final TeacherRepository teacherRepository;
-
-    private final GuestUserRepository guestUserRepository;
-
     private final UserRoleService userRoleService;
 
     private final FieldControl fieldControl;
 
-    public ResponseMessage save(AdminRequest adminRequest){
+
+    public ResponseMessage save (AdminRequest adminRequest){
+
         fieldControl.checkDuplicate(adminRequest.getUsername(), adminRequest.getSsn(), adminRequest.getPhoneNumber());
 
         Admin admin = mapAdminRequestToAdmin(adminRequest);
         admin.setBuilt_in(false);
 
         //if username is also Admin we are setting built_in prop. to FALSE
-        if (Objects.equals(adminRequest.getName(),"Admin")){
+        if(Objects.equals(adminRequest.getUsername(),"Admin")){
             admin.setBuilt_in(true);
         }
 
@@ -55,18 +46,50 @@ public class AdminService {
 
         Admin savedAdmin = adminRepository.save(admin);
 
-        //in response message savedAdmin instance may not be sent back to front-end.
+        //In response message savedAdmin instance may not be sent back to front-end.
         return ResponseMessage.<AdminResponse>builder()
                 .message("Admin Saved")
                 .httpStatus(HttpStatus.CREATED)
                 .object(mapAdminToAdminResponse(savedAdmin))
                 .build();
+    }
 
+    public Page<Admin> getAllAdmins(Pageable pageable){
+        return adminRepository.findAll(pageable);
+    }
 
+    public String deleteAdmin(Long id){
+        //we should check the database if it really exists
+        Optional<Admin>admin = adminRepository.findById(id);
+        //TODO please divide the cases and throw meaningful response messages
+        if(admin.isPresent() && admin.get().isBuilt_in()){
+            throw new ConflictException(Messages.NOT_PERMITTED_METHOD_MESSAGE);
+        }
 
+        if (admin.isPresent()){
+            adminRepository.deleteById(id);
+            //TODO move this hard coded part to Messages class and call this property.
+            return "Admin is deleted successfully";
+        }
+
+        return String.format(Messages.NOT_FOUND_USER_MESSAGE,id);
 
     }
 
+
+    private AdminResponse mapAdminToAdminResponse(Admin admin){
+        return AdminResponse.builder()
+                .userId(admin.getId())
+                .username(admin.getUsername())
+                .name(admin.getName())
+                .surname(admin.getSurname())
+                .phoneNumber(admin.getPhoneNumber())
+                .gender(admin.getGender())
+                .birthDay(admin.getBirthDay())
+                .birthPlace(admin.getBirthPlace())
+                .ssn(admin.getSsn())
+                .build();
+    }
 
     private Admin mapAdminRequestToAdmin(AdminRequest adminRequest){
         return Admin.builder()
@@ -83,48 +106,12 @@ public class AdminService {
     }
 
 
-    private AdminResponse mapAdminToAdminResponse(Admin admin){
-        return AdminResponse.builder()
-                .userId(admin.getId())
-                .username(admin.getUsername())
-                .name(admin.getSurname())
-                .surname(admin.getSurname())
-                .birthDay(admin.getBirthDay())
-                .birthPlace(admin.getBirthPlace())
-                .phoneNumber(admin.getPhoneNumber())
-                .gender(admin.getGender())
-                .ssn(admin.getSsn())
-                .build();
 
 
-    }
 
 
     public long countAllAdmins(){
         return adminRepository.count();
-    }
-
-    public Page<Admin> getAllAdmins(Pageable pageable){
-        return adminRepository.findAll(pageable);
-    }
-
-    public String deleteAdmin(Long id){
-        //we should check the database if it really exist
-        Optional<Admin> admin = adminRepository.findById(id);
-
-        //TODO please divide the cases and throw meaningful response messages
-        if (admin.isPresent() && admin.get().isBuilt_in()){
-            throw new ConflictException(Messages.NOT_PERMITTED_METHOD_MESSAGE);
-        }
-
-        if (admin.isPresent()){
-            adminRepository.deleteById(id);
-            //TODO move this hard coded part to Messages class and call this property.
-            return "Admin is deleted successfully";
-        }
-
-        return String.format(Messages.NOT_FOUND_USER_MESSAGE,id);
-
     }
 
 }

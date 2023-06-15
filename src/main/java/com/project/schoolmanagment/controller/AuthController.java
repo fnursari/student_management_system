@@ -28,29 +28,33 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AuthController {
 
-    public  final JwtUtils jwtUtils;
+
+    public final JwtUtils jwtUtils;
     public final AuthenticationManager authenticationManager;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> authenticateUser(@RequestBody @Valid LoginRequest loginRequest){
-        String username= loginRequest.getUsername();
+    public ResponseEntity<AuthResponse>authenticateUser(@RequestBody @Valid LoginRequest loginRequest){
+        String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
 
         //we authenticate the username and the password
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
+        Authentication authentication =
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
 
         //if authenticated successfully, we upload the authentication to the SECURITY CONTEXT
         SecurityContextHolder.getContext().setAuthentication(authentication);
         //we create a JWT token for further requests
-        String token = "Bearer " + jwtUtils.generateJwtToken(authentication);
+        String token = "Bearer " + jwtUtils.generateJtwToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        Set<String> roles = userDetails.getAuthorities()
-                            .stream().map(GrantedAuthority::getAuthority)
-                            .collect(Collectors.toSet());
+        Set<String>roles = userDetails.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
 
-        Optional<String> role = roles.stream().findFirst();
+
+        Optional<String>role = roles.stream().findFirst();
 
         // another way of using builder
         AuthResponse.AuthResponseBuilder authResponse = AuthResponse.builder();
@@ -58,17 +62,14 @@ public class AuthController {
         authResponse.token(token.substring(7));
         authResponse.name(userDetails.getName());
 
-        if (role.isPresent()){
+        if(role.isPresent()){
             authResponse.role(role.get());
-            if (role.get().equalsIgnoreCase(RoleType.TEACHER.name())){
+            if(role.get().equalsIgnoreCase(RoleType.TEACHER.name())){
                 authResponse.isAdvisory(userDetails.getIsAdvisor().toString());
             }
         }
 
         return ResponseEntity.ok(authResponse.build());
-
-
-
-
     }
 }
+
