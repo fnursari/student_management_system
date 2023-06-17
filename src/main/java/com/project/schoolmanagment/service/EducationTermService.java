@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.stream.Collectors;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class EducationTermService {
@@ -31,6 +34,13 @@ public class EducationTermService {
                 .object(educationTermDto.mapEducationTermToEducationTermResponse(savedEducationTerm))
                 .httpStatus(HttpStatus.CREATED)
                 .build();
+    }
+
+    public List<EducationTermResponse> getAllEducationTerms(){
+        return educationTermRepository.findAll()
+                .stream()
+                .map(educationTermDto::mapEducationTermToEducationTermResponse)
+                .collect(Collectors.toList());
     }
 
      public EducationTermResponse getEducationTermById(Long id){
