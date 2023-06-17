@@ -1,5 +1,6 @@
 package com.project.schoolmanagment.payload.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.schoolmanagment.entity.enums.Term;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,10 +16,19 @@ import java.time.LocalDate;
 @Builder(toBuilder = true)
 public class EducationTermRequest {
 
+
     @NotNull(message = "Education Term must not be empty")
     private Term term;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private LocalDate lastRegistrationDate;
 
+    @NotNull(message ="Start Date must not be empty")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
+
+    @NotNull(message ="End Date must not be empty")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
+
+    @NotNull(message ="Last Registration Date must not be empty")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate lastRegistrationDate;
 }
