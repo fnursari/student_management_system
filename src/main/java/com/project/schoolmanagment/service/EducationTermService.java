@@ -33,6 +33,25 @@ public class EducationTermService {
                 .build();
     }
 
+     public EducationTermResponse getEducationTermById(Long id){
+//        return educationTermDto.mapEducationTermToEducationTermResponse(educationTermRepository.findById(id).get());
+
+        EducationTerm term = checkEducationTermExist(id);
+
+        return educationTermDto.mapEducationTermToEducationTermResponse(term);
+
+     }
+
+     private EducationTerm checkEducationTermExist(Long id){
+         EducationTerm term = educationTermRepository.findByIdEquals(id);
+
+         if (term == null){
+             throw new ResourceNotFoundException(String.format(Messages.EDUCATION_TERM_NOT_FOUND_MESSAGE,id));
+         } else {
+             return term;
+         }
+     }
+
 
     private void validateEducationTermDates(EducationTermRequest educationTermRequest){
 
