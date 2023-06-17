@@ -33,4 +33,19 @@ public class EducationTermDto {
                 .build();
     }
 
+    public EducationTerm mapEducationTermRequestToUpdatedEducationTerm(Long id, EducationTermRequest educationTermRequest){
+
+        return mapEducationTermRequestToEducationTerm(educationTermRequest)
+                .toBuilder()
+                .id(id)
+                .build();
+//        return  EducationTerm.builder()
+//                .id(id)
+//                .term(educationTermRequest.getTerm())
+//                .startDate(educationTermRequest.getStartDate())
+//                .endDate(educationTermRequest.getEndDate())
+//                .lastRegistrationDate(educationTermRequest.getLastRegistrationDate())
+//                .build();
+    }
+
 }
