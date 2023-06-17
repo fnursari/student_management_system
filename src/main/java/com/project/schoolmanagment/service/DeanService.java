@@ -9,21 +9,28 @@ import com.project.schoolmanagment.payload.response.DeanResponse;
 import com.project.schoolmanagment.payload.response.ResponseMessage;
 import com.project.schoolmanagment.repository.DeanRepository;
 import com.project.schoolmanagment.utils.CheckParameterUpdateMethod;
-import com.project.schoolmanagment.utils.FieldControl;
+import com.project.schoolmanagment.utils.ServiceHelpers;
 import com.project.schoolmanagment.utils.Messages;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class DeanService {
 
 
-    private final FieldControl fieldControl;
+    private final ServiceHelpers serviceHelpers;
 
     private final DeanDto deanDto;
 
@@ -35,11 +42,13 @@ public class DeanService {
 
     //TODO use mapsturct in your 3. repository
     public ResponseMessage<DeanResponse> save(DeanRequest deanRequest) {
-        fieldControl.checkDuplicate(deanRequest.getUsername(), deanRequest.getSsn(), deanRequest.getPhoneNumber());
+        serviceHelpers.checkDuplicate(deanRequest.getUsername(), deanRequest.getSsn(), deanRequest.getPhoneNumber());
+        // DTO-POJO dönüşümü
         Dean dean = deanDto.mapDeanRequestToDean(deanRequest);
         dean.setUserRole(userRoleService.getUserRole(RoleType.MANAGER));
         dean.setPassword(passwordEncoder.encode(dean.getPassword()));
 
+        //DB kayıt
         Dean savedDean = deanRepository.save(dean);
 
         return ResponseMessage.<DeanResponse>builder()
@@ -54,7 +63,7 @@ public class DeanService {
 
         //we are preventing the user to change the username + ssn + phoneNumber
         if (!CheckParameterUpdateMethod.checkUniqueProperties(dean.get(), deanRequest)) {
-            fieldControl.checkDuplicate(deanRequest.getUsername(),
+            serviceHelpers.checkDuplicate(deanRequest.getUsername(),
                     deanRequest.getSsn(),
                     deanRequest.getPhoneNumber());
         }
@@ -72,12 +81,13 @@ public class DeanService {
     }
     //do we really have a dean with this ID
     private Optional<Dean> isDeanExist(Long deanId) {
-        Optional<Dean> dean = deanRepository.findById(deanId);
+        Optional<Dean> dean = deanRepository.findById(deanId); // nesne yada boş bir nesne döndürür.
+        // null olabilme durumunu yönetmek için sunulan bir yapıdır.
 
 //		Optional<Dean> dean = deanRepository.findById(deanId)
 //				.orElseThrow(()-> new ResourceNotFoundException(String.format(Messages.NOT_FOUND_USER_MESSAGE, deanId)));
 
-        if (!deanRepository.findById(deanId).isPresent()) {
+        if (!deanRepository.findById(deanId).isPresent()) { // isPresent() -> dean yoksa false
             throw new ResourceNotFoundException(String.format(Messages.NOT_FOUND_USER_MESSAGE, deanId));
         } else {
             return dean;
@@ -95,6 +105,29 @@ public class DeanService {
                 .message("Dean deleted")
                 .httpStatus(HttpStatus.OK)
                 .build();
+    }
+
+    public ResponseMessage<DeanResponse> getDeanById(Long deanId){
+
+        return ResponseMessage.<DeanResponse>builder()
+                .message("Dean successfully found")
+                .httpStatus(HttpStatus.OK)
+                .object(deanDto.mapDeanToDeanResponse(isDeanExist(deanId).get()))
+                .build();
+    }
+
+    public List<DeanResponse> getAllDeans(){
+        return deanRepository.findAll()
+                .stream()
+                .map(dean -> deanDto.mapDeanToDeanResponse(dean))
+                .collect(Collectors.toList());
+    }
+
+    public Page<DeanResponse> getAllDeansByPage(int page, int size, String sort, String type){
+
+        Pageable pageable = serviceHelpers.getPageableWithProperties(page,size,sort,type);
+
+        return deanRepository.findAll(pageable).map(deanDto::mapDeanToDeanResponse);
     }
 
 

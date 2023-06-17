@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Objects;
 
 @RestController
@@ -24,7 +25,7 @@ public class AdminController {
 
     @PostMapping("/save")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public ResponseEntity<?> save(AdminRequest adminRequest){
+    public ResponseEntity<?> save(@RequestBody @Valid AdminRequest adminRequest){
         return ResponseEntity.ok(adminService.save(adminRequest));
     }
 
@@ -55,6 +56,8 @@ public class AdminController {
     public ResponseEntity<String> delete(@PathVariable Long id){
         return ResponseEntity.ok(adminService.deleteAdmin(id));
     }
+
+
 
 
 
