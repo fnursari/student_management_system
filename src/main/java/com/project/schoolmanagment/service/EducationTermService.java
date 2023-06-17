@@ -72,6 +72,20 @@ public class EducationTermService {
 
         //TODO another requirement can be needed for validating -> registration > end
         // check the dates also for TODAY
+        validateEducationTermDatesForUpdate(educationTermRequest);
+
+        //we need one more validation in addition to validation above
+        //if any education term exist in these year with this term
+        if (educationTermRepository.existsByTermAndYear(educationTermRequest.getTerm(), educationTermRequest.getStartDate().getYear())){
+            throw new ResourceNotFoundException(Messages.EDUCATION_TERM_IS_ALREADY_EXIST_BY_TERM_AND_YEAR_MESSAGE);
+        }
+
+
+    }
+    private void validateEducationTermDatesForUpdate(EducationTermRequest educationTermRequest){
+
+        //TODO another requirement can be needed for validating -> registration > end
+        // check the dates also for TODAY
         //registration > start
         if (educationTermRequest.getLastRegistrationDate().isAfter(educationTermRequest.getStartDate())){
             throw new ResourceNotFoundException(Messages.EDUCATION_START_DATE_IS_EARLIER_THAN_LAST_REGISTRATION_DATE);
@@ -80,11 +94,6 @@ public class EducationTermService {
         //end > start
         if (educationTermRequest.getEndDate().isBefore(educationTermRequest.getStartDate())){
             throw new ResourceNotFoundException(Messages.EDUCATION_END_DATE_IS_EARLIER_THAN_START_DATE);
-        }
-
-        //if any education term exist in these year with this term
-        if (educationTermRepository.existsByTermAndYear(educationTermRequest.getTerm(), educationTermRequest.getStartDate().getYear())){
-            throw new ResourceNotFoundException(Messages.EDUCATION_TERM_IS_ALREADY_EXIST_BY_TERM_AND_YEAR_MESSAGE);
         }
 
 
@@ -111,7 +120,7 @@ public class EducationTermService {
 
         isEducationTermExist(id);
 
-        validateEducationTermDates(educationTermRequest);
+        validateEducationTermDatesForUpdate(educationTermRequest);
 
         EducationTerm educationTermUpdated = educationTermRepository.save(educationTermDto.mapEducationTermRequestToUpdatedEducationTerm(id,educationTermRequest));
 
