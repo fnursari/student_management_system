@@ -17,7 +17,7 @@ public class LessonDto {
                 .isCompulsory(lessonRequest.getIsCompulsory())
                 .build();
     }
-    public LessonResponse mapLessontToLessonResponse(Lesson lesson){
+    public LessonResponse mapLessonToLessonResponse(Lesson lesson){
         return LessonResponse.builder()
                 .lessonId(lesson.getLessonId())
                 .lessonName(lesson.getLessonName())

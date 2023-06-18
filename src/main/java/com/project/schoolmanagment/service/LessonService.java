@@ -9,9 +9,13 @@ import com.project.schoolmanagment.payload.response.LessonResponse;
 import com.project.schoolmanagment.payload.response.ResponseMessage;
 import com.project.schoolmanagment.repository.LessonRepository;
 import com.project.schoolmanagment.utils.Messages;
+import com.project.schoolmanagment.utils.ServiceHelpers;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +25,8 @@ public class LessonService {
 
     private final LessonDto lessonDto;
 
+    private final ServiceHelpers serviceHelpers;
+
     public ResponseMessage<LessonResponse> saveLesson(LessonRequest lessonRequest){
 
         isLessonExistByLessonName(lessonRequest.getLessonName());
@@ -28,7 +34,7 @@ public class LessonService {
         Lesson savedLEsson = lessonRepository.save(lessonDto.mapLessonRequestToLesson(lessonRequest));
 
         return ResponseMessage.<LessonResponse>builder()
-                .object(lessonDto.mapLessontToLessonResponse(savedLEsson))
+                .object(lessonDto.mapLessonToLessonResponse(savedLEsson))
                 .message("Lesson Created Successfully")
                 .httpStatus(HttpStatus.CREATED)
                 .build();
@@ -44,6 +50,19 @@ public class LessonService {
                 .message("Lesson is deleted successfully")
                 .httpStatus(HttpStatus.OK)
                 .build();
+    }
+
+    public ResponseMessage<LessonResponse> getLessonByLessonName(String lessonName){
+        return ResponseMessage.<LessonResponse>builder()
+                .message("Lesson is successfully found")
+                .object(lessonDto.mapLessonToLessonResponse(lessonRepository.getLessonByLessonName(lessonName).get()))
+                .httpStatus(HttpStatus.OK)
+                .build();
+    }
+
+    public Page<LessonResponse> findLessonByPage(int page, int size, String sort, String type){
+        Pageable pageable = serviceHelpers.getPageableWithProperties(page,size,sort,type);
+        return lessonRepository.findAll(pageable).map(lessonDto::mapLessonToLessonResponse);
     }
 
     private boolean isLessonExistByLessonName(String lessonName){
