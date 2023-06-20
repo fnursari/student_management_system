@@ -51,6 +51,12 @@ public class LessonProgramController {
         return lessonProgramService.getAllAssigned();
     }
 
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER','ASSISTANT_MANAGER')")
+    public ResponseMessage deleteLessonProgramById(@PathVariable Long id){
+        return lessonProgramService.deleteLessonProgramById(id);
+    }
+
 
 
 }
