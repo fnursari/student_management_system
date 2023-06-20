@@ -1,26 +1,24 @@
 package com.project.schoolmanagment.entity.concretes;
 
+//CTRL+SHIFT+F --> searching. This is the most powerful/wider search in IntelliJ
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.schoolmanagment.entity.enums.Day;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class LessonProgram implements Serializable {
-
-    //What is Serializable/Deserializable
+public class LessonProgram {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,30 +33,36 @@ public class LessonProgram implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm", timezone = "US")
     private LocalTime stopTime;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
-            name = "lessonprogram_lesson_table",
+            name = "lesson_program_lesson",
             joinColumns = @JoinColumn(name = "lessonprogram_id"),
             inverseJoinColumns = @JoinColumn(name = "lesson_id")
     )
-    private Set<Lesson> lesson;
+    private Set<Lesson>lesson;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     private EducationTerm educationTerm;
 
-    //CTRL+SHIFT+F --> searching. This is the most powerful/wider search in IntelliJ
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @ManyToMany(mappedBy = "lessonsProgramList", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "lessonsProgramList" ,fetch = FetchType.EAGER)
     private Set<Teacher> teachers;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @ManyToMany(mappedBy = "lessonsProgramList", fetch = FetchType.EAGER)
-    private Set<Student> students;
+    @ManyToMany(mappedBy = "lessonsProgramList" ,fetch = FetchType.EAGER)
+    private Set<Student>students;
 
     @PreRemove
     private void removeLessonProgramFromStudent(){
         teachers.forEach(teacher -> teacher.getLessonsProgramList().remove(this));
         students.forEach(student -> student.getLessonsProgramList().remove(this));
     }
+
+
+
+
+
+
 
 }

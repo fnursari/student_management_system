@@ -15,8 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.stream.Collectors;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +28,7 @@ public class EducationTermService {
 
     private final ServiceHelpers serviceHelpers;
 
+
     public ResponseMessage<EducationTermResponse> saveEducationTerm(EducationTermRequest educationTermRequest){
 
         validateEducationTermDates(educationTermRequest);
@@ -35,10 +36,11 @@ public class EducationTermService {
         EducationTerm savedEducationTerm = educationTermRepository.save(educationTermDto.mapEducationTermRequestToEducationTerm(educationTermRequest));
 
         return ResponseMessage.<EducationTermResponse>builder()
-                .message("Education term saved")
+                .message("Education Term Saved")
                 .object(educationTermDto.mapEducationTermToEducationTermResponse(savedEducationTerm))
                 .httpStatus(HttpStatus.CREATED)
                 .build();
+
     }
 
     public List<EducationTermResponse> getAllEducationTerms(){
@@ -48,75 +50,43 @@ public class EducationTermService {
                 .collect(Collectors.toList());
     }
 
-     public EducationTermResponse getEducationTermById(Long id){
-//        return educationTermDto.mapEducationTermToEducationTermResponse(educationTermRepository.findById(id).get());
+
+    public EducationTermResponse getEducationTermResponseById(Long id){
+
+//		return educationTermDto.mapEducationTermToEducationTermResponse
+//				(educationTermRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Could not find Education term with id " + id)));
 
         EducationTerm term = isEducationTermExist(id);
 
         return educationTermDto.mapEducationTermToEducationTermResponse(term);
 
-     }
-
-     private EducationTerm isEducationTermExist(Long id){
-         EducationTerm term = educationTermRepository.findByIdEquals(id);
-
-         if (term == null){
-             throw new ResourceNotFoundException(String.format(Messages.EDUCATION_TERM_NOT_FOUND_MESSAGE,id));
-         } else {
-             return term;
-         }
-     }
-
-
-    private void validateEducationTermDates(EducationTermRequest educationTermRequest){
-
-        //TODO another requirement can be needed for validating -> registration > end
-        // check the dates also for TODAY
-        validateEducationTermDatesForUpdate(educationTermRequest);
-
-        //we need one more validation in addition to validation above
-        //if any education term exist in these year with this term
-        if (educationTermRepository.existsByTermAndYear(educationTermRequest.getTerm(), educationTermRequest.getStartDate().getYear())){
-            throw new ResourceNotFoundException(Messages.EDUCATION_TERM_IS_ALREADY_EXIST_BY_TERM_AND_YEAR_MESSAGE);
-        }
-
-
-    }
-    private void validateEducationTermDatesForUpdate(EducationTermRequest educationTermRequest){
-
-        //TODO another requirement can be needed for validating -> registration > end
-        // check the dates also for TODAY
-        //registration > start
-        if (educationTermRequest.getLastRegistrationDate().isAfter(educationTermRequest.getStartDate())){
-            throw new ResourceNotFoundException(Messages.EDUCATION_START_DATE_IS_EARLIER_THAN_LAST_REGISTRATION_DATE);
-        }
-
-        //end > start
-        if (educationTermRequest.getEndDate().isBefore(educationTermRequest.getStartDate())){
-            throw new ResourceNotFoundException(Messages.EDUCATION_END_DATE_IS_EARLIER_THAN_START_DATE);
-        }
-
-
     }
 
-    public Page<EducationTermResponse> getAllEducationTermsByPage(int page, int size, String sort, String type) {
-        Pageable pageable = serviceHelpers.getPageableWithProperties(page, size, sort, type);
-        return educationTermRepository.findAll(pageable)
-                .map(educationTermDto::mapEducationTermToEducationTermResponse);
+    public EducationTerm getEducationTermById(Long id){
+        return isEducationTermExist(id);
     }
 
-    public ResponseMessage<?> deleteEducationTermById(Long id) {
+
+    public ResponseMessage<?>deleteEducationTermById(Long id){
+
         isEducationTermExist(id);
 
         educationTermRepository.deleteById(id);
 
-        return  ResponseMessage.<EducationTermResponse>builder()
+        return ResponseMessage.builder()
                 .message("Education Term Deleted Successfully")
                 .httpStatus(HttpStatus.OK)
                 .build();
     }
 
-    public ResponseMessage<EducationTermResponse> updateEducationTerm(Long id, EducationTermRequest educationTermRequest) {
+
+    public Page<EducationTermResponse> getAllEducationTermsByPage (int page,int size,String sort,String type){
+        Pageable pageable = serviceHelpers.getPageableWithProperties(page, size, sort, type);
+
+        return educationTermRepository.findAll(pageable).map(educationTermDto::mapEducationTermToEducationTermResponse);
+    }
+
+    public ResponseMessage<EducationTermResponse>updateEducationTerm(Long id,EducationTermRequest educationTermRequest){
 
         isEducationTermExist(id);
 
@@ -124,12 +94,65 @@ public class EducationTermService {
 
         EducationTerm educationTermUpdated = educationTermRepository.save(educationTermDto.mapEducationTermRequestToUpdatedEducationTerm(id,educationTermRequest));
 
-        return  ResponseMessage.<EducationTermResponse>builder()
-                .object(educationTermDto.mapEducationTermToEducationTermResponse(educationTermUpdated))
+        return ResponseMessage.<EducationTermResponse>builder()
                 .message("Education Term Updated")
                 .httpStatus(HttpStatus.OK)
+                .object(educationTermDto.mapEducationTermToEducationTermResponse(educationTermUpdated))
                 .build();
+
+    }
+
+    private EducationTerm isEducationTermExist(Long id){
+        EducationTerm term = educationTermRepository.findByIdEquals(id);
+        if(term==null){
+            throw new ResourceNotFoundException(String.format(Messages.EDUCATION_TERM_NOT_FOUND_MESSAGE,id));
+        } else {
+            return term;
+        }
+    }
+
+
+
+    private void validateEducationTermDates(EducationTermRequest educationTermRequest){
+
+        //TODO another requirement can be needed for validating ->  registration > end
+        // check the dates also for TODAY
+
+
+        validateEducationTermDatesForUpdate(educationTermRequest);
+        // we need one more validatetion in addition to validation above
+
+        // if any education term exist in these year with this term
+        if(educationTermRepository.existsByTermAndYear(educationTermRequest.getTerm(),educationTermRequest.getStartDate().getYear())){
+            throw new ResourceNotFoundException(Messages.EDUCATION_TERM_IS_ALREADY_EXIST_BY_TERM_AND_YEAR_MESSAGE);
+        }
 
 
     }
+
+    private void validateEducationTermDatesForUpdate(EducationTermRequest educationTermRequest){
+
+        //TODO another requirement can be needed for validating ->  registration > end
+        // check the dates also for TODAY
+
+        // registration > start
+        if(educationTermRequest.getLastRegistrationDate().isAfter(educationTermRequest.getStartDate())){
+            throw new ResourceNotFoundException(Messages.EDUCATION_START_DATE_IS_EARLIER_THAN_LAST_REGISTRATION_DATE);
+        }
+
+        // end > start
+        if(educationTermRequest.getEndDate().isBefore(educationTermRequest.getStartDate())){
+            throw new ResourceNotFoundException(Messages.EDUCATION_END_DATE_IS_EARLIER_THAN_START_DATE);
+        }
+
+
+    }
+
+
+
+
+
+
+
+
 }
