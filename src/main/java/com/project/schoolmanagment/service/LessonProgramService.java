@@ -79,4 +79,11 @@ public class LessonProgramService {
                 .collect(Collectors.toList());
 
     }
+
+    public List<LessonProgramResponse> getAllAssigned() {
+        return lessonProgramRepository.findByTeachers_IdNotNull()
+                .stream()
+                .map(lessonProgramDto::mapLessonProgramtoLessonProgramResponse)
+                .collect(Collectors.toList());
+    }
 }
