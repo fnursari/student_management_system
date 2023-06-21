@@ -12,8 +12,11 @@ import com.project.schoolmanagment.payload.response.LessonProgramResponse;
 import com.project.schoolmanagment.payload.response.ResponseMessage;
 import com.project.schoolmanagment.repository.LessonProgramRepository;
 import com.project.schoolmanagment.utils.Messages;
+import com.project.schoolmanagment.utils.ServiceHelpers;
 import com.project.schoolmanagment.utils.TimeControl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +35,8 @@ public class LessonProgramService {
     private final EducationTermService educationTermService;
 
     private final LessonProgramDto lessonProgramDto;
+
+    private final ServiceHelpers serviceHelpers;
 
 
     public ResponseMessage<LessonProgramResponse>saveLessonProgram(LessonProgramRequest lessonProgramRequest){
@@ -97,5 +102,27 @@ public class LessonProgramService {
     private void isLessonProgramExistById(Long id){
         lessonProgramRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException(String.format(Messages.NOT_FOUND_LESSON_PROGRAM_MESSAGE,id)));
+    }
+
+    public Page<LessonProgramResponse> getAllLessonProgramByPage(int page, int size, String sort, String type) {
+        Pageable pageable = serviceHelpers.getPageableWithProperties(page,size,sort,type);
+
+        return lessonProgramRepository.findAll(pageable).map(lessonProgramDto::mapLessonProgramtoLessonProgramResponse);
+    }
+
+    //TODO add a validation for empty collection and send a meaningful response
+    public Set<LessonProgramResponse> getLessonProgramByTeacher(String username) {
+        return lessonProgramRepository.getLessonProgramByTeachersUsername(username)
+                .stream().map(lessonProgramDto::mapLessonProgramtoLessonProgramResponse)
+                .collect(Collectors.toSet());
+    }
+
+    public Set<LessonProgram> getLessonProgramById(Set<Long> lessonIdSet){
+        Set<LessonProgram> lessonPrograms = lessonProgramRepository.getLessonProgramByLessonProgramIdList(lessonIdSet);
+
+        if (lessonPrograms.isEmpty()){
+            throw new BadRequestException(Messages.NOT_FOUND_LESSON_PROGRAM_MESSAGE_WITHOUT_ID_INFO);
+        }
+        return lessonPrograms;
     }
 }
