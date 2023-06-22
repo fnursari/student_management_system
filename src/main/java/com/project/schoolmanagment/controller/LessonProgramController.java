@@ -74,7 +74,7 @@ public class LessonProgramController {
     @PreAuthorize("hasAnyAuthority('TEACHER','ADMIN','MANAGER','ASSISTANT_MANAGER')")
     @GetMapping("/getAllLessonProgramByTeacher")
     public Set<LessonProgramResponse> getAllLessonProgramByTeacherUsername(HttpServletRequest httpServletRequest){
-        String userName = (String) httpServletRequest.getAttribute("username");
+        String userName = (String) httpServletRequest.getHeader("username");
         return lessonProgramService.getLessonProgramByTeacher(userName);
 
     }
