@@ -14,6 +14,7 @@ import com.project.schoolmanagment.payload.response.ResponseMessage;
 import com.project.schoolmanagment.payload.response.TeacherResponse;
 import com.project.schoolmanagment.repository.TeacherRepository;
 import com.project.schoolmanagment.utils.CheckParameterUpdateMethod;
+import com.project.schoolmanagment.utils.CheckSameLessonProgram;
 import com.project.schoolmanagment.utils.Messages;
 import com.project.schoolmanagment.utils.ServiceHelpers;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,8 @@ public class TeacherService {
     private final TeacherRepository teacherRepository;
 
     private final AdvisoryTeacherService advisoryTeacherService;
+
+    private final CheckSameLessonProgram checkSameLessonProgram;
 
 
 
@@ -158,5 +161,17 @@ public class TeacherService {
                 .getLessonProgramById(chooseLessonTeacherRequest.getLessonProgramId());
 
         Set<LessonProgram>teachersLessonProgram = teacher.getLessonsProgramList();
+
+        checkSameLessonProgram.checkLessonPrograms(teachersLessonProgram, lessonPrograms);
+
+        teachersLessonProgram.addAll(lessonPrograms);
+        teacher.setLessonsProgramList(teachersLessonProgram);
+        Teacher updatedTeacher = teacherRepository.save(teacher);
+
+        return ResponseMessage.<TeacherResponse>builder()
+                .object(teacherDto.mapTeacherToTeacherResponse(updatedTeacher))
+                .message("Lesson Program added to teacher")
+                .httpStatus(HttpStatus.OK)
+                .build();
     }
 }
